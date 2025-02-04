@@ -1,0 +1,73 @@
+import React, { useState } from "react";
+
+interface Param {
+  id: number;
+  name: string;
+  type: "string";
+}
+
+interface ParamValue {
+  paramId: number;
+  value: string;
+}
+
+interface Model {
+  paramValues: ParamValue[];
+  colors: Color[];
+}
+
+interface Color {
+  id: number;
+  name: string;
+  hex: string;
+}
+
+interface Props {
+  params: Param[];
+  model: Model;
+}
+
+const ParamEditor: React.FC<Props> = ({ params, model }) => {
+  const [paramValues, setParamValues] = useState<ParamValue[]>(model.paramValues);
+
+  const updateValue = (paramId: number, newValue: string) => {
+    setParamValues((prev) =>
+      prev.map((p) => (p.paramId === paramId ? { ...p, value: newValue } : p))
+    );
+  };
+
+  // Метод для получения обновлённой модели
+  const getModel = (): Model => {
+    return { ...model, paramValues };
+  };
+
+  return (
+    <div>
+      {params.map((param) => {
+        const paramValue = paramValues.find((p) => p.paramId === param.id);
+
+        return (
+          <div key={param.id} className="mb-2">
+            <label className="block text-sm font-medium">{param.name}:</label>
+            <input
+              type="text"
+              value={paramValue?.value || ""}
+              onChange={(e) => updateValue(param.id, e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        );
+      })}
+
+      {/* Кнопка для проверки getModel() */}
+      <button
+        onClick={() => console.log(getModel())}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Получить модель
+      </button>
+    </div>
+  );
+};
+
+export default ParamEditor;
